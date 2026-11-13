@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $form_token = create_form_token('register');
 require __DIR__ . '/includes/auth-page-top.php';
 ?>
-<section class="auth-card" aria-labelledby="auth-title">
+<section class="auth-card auth-card-register" aria-labelledby="auth-title">
     <p class="auth-eyebrow">A little more lovely</p>
     <h1 id="auth-title">Create your account</h1>
     <p class="auth-intro">Join Serenitea for a smoother, sweeter checkout.</p>
