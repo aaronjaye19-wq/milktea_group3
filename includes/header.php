@@ -31,7 +31,7 @@ $cart_count = cart_count();
 ) === 'index.php'
     ? 'active'
     : '' ?>">Menu</a>
-            <?php if (is_user_logged_in()): ?>
+            <?php if (isset($_SESSION['user_id'])): ?>
                 <span class="nav-account">Hi, <?= sanitize(
                     explode(' ', $_SESSION['user_name'] ?? 'there')[0],
                 ) ?></span>

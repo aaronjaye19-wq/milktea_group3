@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/functions.php';
-if (is_user_logged_in()) {
+if (isset($_SESSION['user_id'])) {
     redirect('index.php');
 }
 $page_title = 'Sign In';
