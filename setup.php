@@ -28,10 +28,10 @@
     <p class="sub">This script creates the database, tables, and sample data for your Serenitea milk tea shop.</p>
 
 <?php
-$host     = 'localhost';
+$host = 'localhost';
 $username = 'root';
 $password = '';
-$dbname   = 'milktea_shop';
+$dbname = 'milktea_shop';
 
 $steps = [];
 $has_error = false;
@@ -49,7 +49,9 @@ try {
 if (!$has_error) {
     // 2. Create database
     try {
-        $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbname` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+        $pdo->exec(
+            "CREATE DATABASE IF NOT EXISTS `$dbname` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
+        );
         $pdo->exec("USE `$dbname`");
         $steps[] = ['ok', "Database `$dbname` created / already exists."];
     } catch (PDOException $e) {
@@ -61,14 +63,32 @@ if (!$has_error) {
 if (!$has_error) {
     // 3. Create tables
     $tables = [
-        "admins" => "CREATE TABLE IF NOT EXISTS `admins` (
+        'customers' => "CREATE TABLE IF NOT EXISTS `customers` (
+            `id`         INT AUTO_INCREMENT PRIMARY KEY,
+            `full_name`  VARCHAR(200) NOT NULL,
+            `email`      VARCHAR(254) NOT NULL UNIQUE,
+            `password`   VARCHAR(255) NOT NULL,
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
+
+        'password_resets' => "CREATE TABLE IF NOT EXISTS `password_resets` (
+            `id`          INT AUTO_INCREMENT PRIMARY KEY,
+            `customer_id` INT NOT NULL,
+            `token_hash`  CHAR(64) NOT NULL UNIQUE,
+            `expires_at`  DATETIME NOT NULL,
+            `created_at`  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX (`customer_id`),
+            FOREIGN KEY (`customer_id`) REFERENCES `customers`(`id`) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
+
+        'admins' => "CREATE TABLE IF NOT EXISTS `admins` (
             `id`         INT AUTO_INCREMENT PRIMARY KEY,
             `username`   VARCHAR(100) NOT NULL UNIQUE,
             `password`   VARCHAR(255) NOT NULL,
             `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
 
-        "products" => "CREATE TABLE IF NOT EXISTS `products` (
+        'products' => "CREATE TABLE IF NOT EXISTS `products` (
             `id`           INT AUTO_INCREMENT PRIMARY KEY,
             `name`         VARCHAR(200) NOT NULL,
             `description`  TEXT,
@@ -79,7 +99,7 @@ if (!$has_error) {
             `created_at`   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
 
-        "orders" => "CREATE TABLE IF NOT EXISTS `orders` (
+        'orders' => "CREATE TABLE IF NOT EXISTS `orders` (
             `id`               INT AUTO_INCREMENT PRIMARY KEY,
             `customer_name`    VARCHAR(200) NOT NULL,
             `customer_email`   VARCHAR(200) NOT NULL,
@@ -92,7 +112,7 @@ if (!$has_error) {
             `updated_at`       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
 
-        "order_items" => "CREATE TABLE IF NOT EXISTS `order_items` (
+        'order_items' => "CREATE TABLE IF NOT EXISTS `order_items` (
             `id`           INT AUTO_INCREMENT PRIMARY KEY,
             `order_id`     INT NOT NULL,
             `product_id`   INT,
@@ -112,7 +132,10 @@ if (!$has_error) {
             $pdo->exec($sql);
             $steps[] = ['ok', "Table `$name` created / already exists."];
         } catch (PDOException $e) {
-            $steps[] = ['err', "Failed to create table `$name`: " . $e->getMessage()];
+            $steps[] = [
+                'err',
+                "Failed to create table `$name`: " . $e->getMessage(),
+            ];
             $has_error = true;
         }
     }
@@ -120,87 +143,108 @@ if (!$has_error) {
 
 if (!$has_error) {
     // 4. Seed admin user
-    $admin_count = $pdo->query("SELECT COUNT(*) FROM admins")->fetchColumn();
+    $admin_count = $pdo->query('SELECT COUNT(*) FROM admins')->fetchColumn();
     if ($admin_count == 0) {
         $hashed = password_hash('admin123', PASSWORD_DEFAULT);
-        $pdo->prepare("INSERT INTO admins (username, password) VALUES (?, ?)")
-            ->execute(['admin', $hashed]);
-        $steps[] = ['ok', 'Admin user created — username: <strong>admin</strong> / password: <strong>admin123</strong>'];
+        $pdo->prepare(
+            'INSERT INTO admins (username, password) VALUES (?, ?)',
+        )->execute(['admin', $hashed]);
+        $steps[] = [
+            'ok',
+            'Admin user created — username: <strong>admin</strong> / password: <strong>admin123</strong>',
+        ];
     } else {
         $steps[] = ['info', 'Admin user already exists. Skipped.'];
     }
 
     // 5. Seed products
-    $product_count = $pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
+    $product_count = $pdo
+        ->query('SELECT COUNT(*) FROM products')
+        ->fetchColumn();
     if ($product_count == 0) {
         $products = [
             [
                 'Brown Sugar Milk Tea',
                 'Our signature drink with rich brown sugar syrup, creamy milk, and chewy tapioca pearls. A crowd favorite!',
-                'Milk Tea', 120.00,
-                'https://images.pexels.com/photos/9102653/pexels-photo-9102653.jpeg?auto=compress&cs=tinysrgb&w=800'
+                'Milk Tea',
+                120.0,
+                'https://images.pexels.com/photos/9102653/pexels-photo-9102653.jpeg?auto=compress&cs=tinysrgb&w=800',
             ],
             [
                 'Classic Milk Tea',
                 'Smooth and creamy classic milk tea brewed with premium black tea and fresh milk. Simple and satisfying.',
-                'Milk Tea', 95.00,
-                'https://images.pexels.com/photos/15800979/pexels-photo-15800979.jpeg?auto=compress&cs=tinysrgb&w=800'
+                'Milk Tea',
+                95.0,
+                'https://images.pexels.com/photos/15800979/pexels-photo-15800979.jpeg?auto=compress&cs=tinysrgb&w=800',
             ],
             [
                 'Taro Milk Tea',
                 'Velvety taro root blended with milk tea for a naturally sweet and nutty flavor. Beautifully purple.',
-                'Milk Tea', 115.00,
-                'https://images.pexels.com/photos/33212319/pexels-photo-33212319.jpeg?auto=compress&cs=tinysrgb&w=800'
+                'Milk Tea',
+                115.0,
+                'https://images.pexels.com/photos/33212319/pexels-photo-33212319.jpeg?auto=compress&cs=tinysrgb&w=800',
             ],
             [
                 'Matcha Milk Tea',
                 'Premium ceremonial-grade matcha blended with fresh milk and sweetened just right. Earthy and smooth.',
-                'Milk Tea', 125.00,
-                'https://images.pexels.com/photos/18553404/pexels-photo-18553404.png?auto=compress&cs=tinysrgb&w=800'
+                'Milk Tea',
+                125.0,
+                'https://images.pexels.com/photos/18553404/pexels-photo-18553404.png?auto=compress&cs=tinysrgb&w=800',
             ],
             [
                 'Strawberry Fruit Tea',
                 'Refreshing strawberry tea bursting with real fruit flavor. Light, bright, and perfect for a hot day.',
-                'Fruit Tea', 105.00,
-                'https://images.pexels.com/photos/28944484/pexels-photo-28944484.jpeg?auto=compress&cs=tinysrgb&w=800'
+                'Fruit Tea',
+                105.0,
+                'https://images.pexels.com/photos/28944484/pexels-photo-28944484.jpeg?auto=compress&cs=tinysrgb&w=800',
             ],
             [
                 'Thai Milk Tea',
                 'Bold Thai black tea infused with spices, condensed milk, and evaporated milk for a creamy, exotic taste.',
-                'Milk Tea', 110.00,
-                'https://images.pexels.com/photos/19154599/pexels-photo-19154599.jpeg?auto=compress&cs=tinysrgb&w=800'
+                'Milk Tea',
+                110.0,
+                'https://images.pexels.com/photos/19154599/pexels-photo-19154599.jpeg?auto=compress&cs=tinysrgb&w=800',
             ],
             [
                 'Iced Matcha Latte',
                 'Chilled matcha latte with steamed oat milk. Clean, energizing, and lightly sweet.',
-                'Coffee', 130.00,
-                'https://images.pexels.com/photos/32158135/pexels-photo-32158135.jpeg?auto=compress&cs=tinysrgb&w=800'
+                'Coffee',
+                130.0,
+                'https://images.pexels.com/photos/32158135/pexels-photo-32158135.jpeg?auto=compress&cs=tinysrgb&w=800',
             ],
             [
                 'Mango Fruit Tea',
                 'Juicy mango blended with light tea base and popping mango jellies. Tropical and refreshing.',
-                'Fruit Tea', 110.00,
-                'https://images.pexels.com/photos/6921330/pexels-photo-6921330.jpeg?auto=compress&cs=tinysrgb&w=800'
+                'Fruit Tea',
+                110.0,
+                'https://images.pexels.com/photos/6921330/pexels-photo-6921330.jpeg?auto=compress&cs=tinysrgb&w=800',
             ],
         ];
 
         $stmt = $pdo->prepare(
-            "INSERT INTO products (name, description, category, price, image_url) VALUES (?,?,?,?,?)"
+            'INSERT INTO products (name, description, category, price, image_url) VALUES (?,?,?,?,?)',
         );
         foreach ($products as $p) {
             $stmt->execute($p);
         }
-        $steps[] = ['ok', count($products) . ' sample products added to the menu.'];
+        $steps[] = [
+            'ok',
+            count($products) . ' sample products added to the menu.',
+        ];
     } else {
-        $steps[] = ['info', "Products already exist ($product_count found). Skipped seeding."];
+        $steps[] = [
+            'info',
+            "Products already exist ($product_count found). Skipped seeding.",
+        ];
     }
 }
 
 foreach ($steps as $step):
-    [$type, $msg] = $step;
-?>
+    [$type, $msg] = $step; ?>
     <div class="step <?= $type ?>"><?= $msg ?></div>
-<?php endforeach; ?>
+<?php
+endforeach;
+?>
 
 <?php if (!$has_error): ?>
     <div class="step ok" style="margin-top:20px;font-size:14px;">
