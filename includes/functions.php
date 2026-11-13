@@ -111,3 +111,22 @@ function redirect($url) {
     header('Location: ' . app_url($url));
     exit;
 }
+
+function is_user_logged_in() {
+    return isset($_SESSION['user_id']);
+}
+
+function create_form_token($form) {
+    if (empty($_SESSION['form_tokens'][$form])) {
+        $_SESSION['form_tokens'][$form] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['form_tokens'][$form];
+}
+
+function verify_form_token($form, $token) {
+    $stored = $_SESSION['form_tokens'][$form] ?? '';
+    // Single-use: remove it whether or not it matches
+    unset($_SESSION['form_tokens'][$form]);
+
+    return $stored !== '' && is_string($token) && hash_equals($stored, $token);
+}

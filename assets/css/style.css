@@ -107,6 +107,16 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 
 .nav-cart { display: flex; align-items: center; gap: 6px; }
 
+.nav-account { color: var(--text-muted); font-size: 13px; }
+.nav-logout { margin: 0; }
+.nav-logout button { border: 0; background: transparent; color: var(--brown); font-size: 13px; font-weight: 600; cursor: pointer; }
+.nav-logout button:hover { color: var(--brown-dark); text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 700px) {
+    .main-nav { gap: 14px; }
+    .nav-account { display: none; }
+}
+
 .cart-badge {
     background: var(--brown);
     color: var(--white);
