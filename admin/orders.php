@@ -45,7 +45,8 @@ $status_badge = [
     <?php endforeach; ?>
 </div>
 
-<div class="admin-card">
+<div class="admin-card admin-list-card">
+    <div class="admin-table-scroll">
     <table class="admin-table">
         <thead>
             <tr>
@@ -78,6 +79,7 @@ $status_badge = [
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
     <?php if ($total_pages > 1): ?>
     <nav class="pagination" aria-label="Orders pagination">
         <?php if ($page > 1): ?><a href="<?= app_url('admin/orders.php?status=' . urlencode($filter) . '&page=' . ($page - 1)) ?>">Previous</a><?php else: ?><span class="disabled">Previous</span><?php endif; ?>

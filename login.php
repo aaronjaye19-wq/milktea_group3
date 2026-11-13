@@ -5,6 +5,10 @@ if (isset($_SESSION['user_id'])) {
     redirect('index.php');
 }
 $page_title = 'Sign In';
+$next = $_POST['next'] ?? $_GET['next'] ?? '';
+if (!preg_match('/^(checkout\.php|product\.php\?id=\d+)$/', $next)) {
+    $next = 'index.php';
+}
 $error = '';
 $email = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -27,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 session_regenerate_id(true);
                 $_SESSION['user_id'] = (int) $user['id'];
                 $_SESSION['user_name'] = $user['full_name'];
-                redirect('index.php');
+                redirect($next);
             }
             $error = 'Invalid email or password.';
         } catch (PDOException $e) {
@@ -49,6 +53,7 @@ require __DIR__ . '/includes/auth-page-top.php';
         <input type="hidden" name="form_token" value="<?= sanitize(
             $form_token,
         ) ?>">
+        <input type="hidden" name="next" value="<?= sanitize($next) ?>">
         <div class="form-group"><label class="form-label" for="email">Email address</label><input class="form-control" id="email" name="email" type="email" autocomplete="email" value="<?= sanitize(
             $email,
         ) ?>" required autofocus></div>
