@@ -1,6 +1,14 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.cookie_httponly', '1');
+    ini_set('session.cookie_samesite', 'Lax');
+    session_start([
+        'cookie_secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+        'use_strict_mode' => true,
+        'cookie_httponly' => true,
+        'cookie_samesite' => 'Lax',
+    ]);
 }
 
 function app_url($path = '') {
@@ -90,6 +98,22 @@ function clear_cart() {
 
 function format_price($amount) {
     return '&#8369;' . number_format($amount, 2);
+}
+
+function is_user_logged_in() {
+    return isset($_SESSION['user_id']);
+}
+
+function create_form_token($form) {
+    $token = bin2hex(random_bytes(32));
+    $_SESSION['form_tokens'][$form] = $token;
+    return $token;
+}
+
+function verify_form_token($form, $token) {
+    $expected = $_SESSION['form_tokens'][$form] ?? '';
+    unset($_SESSION['form_tokens'][$form]);
+    return $expected !== '' && is_string($token) && hash_equals($expected, $token);
 }
 
 function is_admin_logged_in() {

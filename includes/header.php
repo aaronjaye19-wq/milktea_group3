@@ -25,6 +25,13 @@ $cart_count = cart_count();
         </a>
         <nav class="main-nav">
             <a href="<?= app_url('index.php') ?>" class="<?= basename($_SERVER['PHP_SELF']) === 'index.php' ? 'active' : '' ?>">Menu</a>
+            <?php if (is_user_logged_in()): ?>
+                <span class="nav-account">Hi, <?= sanitize(explode(' ', $_SESSION['user_name'] ?? 'there')[0]) ?></span>
+                <form class="nav-logout" method="post" action="<?= app_url('logout.php') ?>"><input type="hidden" name="form_token" value="<?= sanitize(create_form_token('logout')) ?>"><button type="submit">Sign out</button></form>
+            <?php else: ?>
+                <a href="<?= app_url('login.php') ?>" class="<?= basename($_SERVER['PHP_SELF']) === 'login.php' ? 'active' : '' ?>">Sign in</a>
+                <a href="<?= app_url('register.php') ?>" class="<?= basename($_SERVER['PHP_SELF']) === 'register.php' ? 'active' : '' ?>">Join</a>
+            <?php endif; ?>
             <a href="<?= app_url('cart.php') ?>" class="nav-cart <?= basename($_SERVER['PHP_SELF']) === 'cart.php' ? 'active' : '' ?>">
                 Cart
                 <?php if ($cart_count > 0): ?>
