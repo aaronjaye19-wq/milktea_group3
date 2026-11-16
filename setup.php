@@ -101,6 +101,7 @@ if (!$has_error) {
 
         'orders' => "CREATE TABLE IF NOT EXISTS `orders` (
             `id`               INT AUTO_INCREMENT PRIMARY KEY,
+            `order_reference`  VARCHAR(32) UNIQUE,
             `customer_name`    VARCHAR(200) NOT NULL,
             `customer_email`   VARCHAR(200) NOT NULL,
             `customer_phone`   VARCHAR(50)  NOT NULL,
@@ -138,6 +139,24 @@ if (!$has_error) {
             ];
             $has_error = true;
         }
+    }
+}
+
+if (!$has_error) {
+    // Add the reference field to existing installations and backfill earlier orders.
+    try {
+        $reference_column = $pdo->query("SHOW COLUMNS FROM `orders` LIKE 'order_reference'")->fetch();
+        if (!$reference_column) {
+            $pdo->exec("ALTER TABLE `orders` ADD `order_reference` VARCHAR(32) NULL UNIQUE AFTER `id`");
+        }
+        $pdo->exec("UPDATE `orders` SET `order_reference` = CONCAT('ST-', LPAD(`id`, 8, '0')) WHERE `order_reference` IS NULL");
+        $pdo->exec("ALTER TABLE `orders` MODIFY `order_reference` VARCHAR(32) NOT NULL");
+        if (!$reference_column) {
+            $steps[] = ['ok', 'Order references added to existing orders.'];
+        }
+    } catch (PDOException $e) {
+        $steps[] = ['err', 'Failed to add order references: ' . $e->getMessage()];
+        $has_error = true;
     }
 }
 

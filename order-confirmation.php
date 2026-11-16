@@ -24,6 +24,11 @@ $items = $items_stmt->fetchAll();
         <h1>Order Placed!</h1>
         <p class="subtitle">Thank you, <?= sanitize($order['customer_name']) ?>! Your order has been received and is now being processed.</p>
 
+        <div class="order-reference-card">
+            <span>YOUR ORDER REFERENCE</span>
+            <strong><?= sanitize($order['order_reference'] ?: ('ST-' . str_pad((string)$order['id'], 8, '0', STR_PAD_LEFT))) ?></strong>
+            <small>Keep this number handy when contacting us about your order.</small>
+        </div>
         <div class="order-details-box">
             <div class="order-detail-row">
                 <span class="order-detail-label">Order Number</span>

@@ -50,6 +50,7 @@ $status_badge = [
     <table class="admin-table fit-table">
         <thead>
             <tr>
+                <th>Reference</th>
                 <th>Order #</th>
                 <th>Customer</th>
                 <th>Phone</th>
@@ -62,10 +63,11 @@ $status_badge = [
         </thead>
         <tbody>
             <?php if (empty($orders)): ?>
-            <tr><td colspan="8" style="text-align:center;color:#9898B5;padding:32px;">No orders found.</td></tr>
+            <tr><td colspan="9" style="text-align:center;color:#9898B5;padding:32px;">No orders found.</td></tr>
             <?php else: ?>
             <?php foreach ($orders as $o): ?>
             <tr>
+                <td data-label="Reference" style="font-weight:600;color:#6b3f29;"><?= sanitize($o['order_reference'] ?: ('ST-' . str_pad((string)$o['id'], 8, '0', STR_PAD_LEFT))) ?></td>
                 <td data-label="Order #" style="font-weight:600;">#<?= str_pad($o['id'], 6, '0', STR_PAD_LEFT) ?></td>
                 <td data-label="Customer"><?= sanitize($o['customer_name']) ?></td>
                 <td data-label="Phone" style="font-size:13px;color:#9898B5;"><?= sanitize($o['customer_phone']) ?></td>

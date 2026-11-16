@@ -38,7 +38,7 @@ $status_badge = [
 ?>
 
 <div class="page-actions">
-    <h2>Order #<?= str_pad($order['id'], 6, '0', STR_PAD_LEFT) ?></h2>
+    <h2>Order <?= sanitize($order['order_reference'] ?: ('ST-' . str_pad((string)$order['id'], 8, '0', STR_PAD_LEFT))) ?></h2>
     <a href="<?= app_url('admin/orders.php') ?>" class="btn btn-secondary">Back to Orders</a>
 </div>
 
@@ -108,6 +108,10 @@ $status_badge = [
         <!-- Order Meta -->
         <div class="info-card">
             <h4>Order Information</h4>
+            <div class="info-row">
+                <span class="label">Order reference</span>
+                <span class="value"><?= sanitize($order['order_reference'] ?: ('ST-' . str_pad((string)$order['id'], 8, '0', STR_PAD_LEFT))) ?></span>
+            </div>
             <div class="info-row">
                 <span class="label">Order #</span>
                 <span class="value">#<?= str_pad($order['id'], 6, '0', STR_PAD_LEFT) ?></span>

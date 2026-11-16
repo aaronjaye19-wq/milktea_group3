@@ -16,16 +16,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !is_user_logged_in()) {
     redirect('login.php?next=' . rawurlencode('product.php?id=' . $id));
 }
 
-// Handle add to cart
-$message = '';
+// Confirm repeat purchases before adding products bought after the previous checkout.
+$repeat_confirmation = false;
+$repeat_selection = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $size  = in_array($_POST['size'] ?? '', ['Regular','Large','Extra Large']) ? $_POST['size'] : 'Regular';
-    $sugar = in_array($_POST['sugar'] ?? '', ['0%','25%','50%','75%','100%']) ? $_POST['sugar'] : '100%';
-    $ice   = in_array($_POST['ice'] ?? '', ['No Ice','Less Ice','Regular Ice','Extra Ice']) ? $_POST['ice'] : 'Regular Ice';
+    $size  = in_array($_POST['size'] ?? '', ['Regular','Large','Extra Large'], true) ? $_POST['size'] : 'Regular';
+    $sugar = in_array($_POST['sugar'] ?? '', ['0%','25%','50%','75%','100%'], true) ? $_POST['sugar'] : '100%';
+    $ice   = in_array($_POST['ice'] ?? '', ['No Ice','Less Ice','Regular Ice','Extra Ice'], true) ? $_POST['ice'] : 'Regular Ice';
     $qty   = max(1, min(20, (int)($_POST['qty'] ?? 1)));
 
-    add_to_cart($product, $size, $sugar, $ice, $qty);
-    redirect('/cart.php');
+    $repeat_selection = compact('size', 'sugar', 'ice', 'qty');
+    $was_ordered = in_array($id, $_SESSION['recent_order_products'] ?? [], true);
+    if ($was_ordered && ($_POST['confirm_repeat'] ?? '') !== 'yes') {
+        $repeat_confirmation = true;
+    } else {
+        add_to_cart($product, $size, $sugar, $ice, $qty);
+        redirect('/cart.php');
+    }
 }
 
 $page_title = $product['name'];
@@ -102,6 +109,27 @@ $ices   = ['No Ice', 'Less Ice', 'Regular Ice', 'Extra Ice'];
             <button type="submit" class="btn btn-primary btn-lg btn-block">Add to Cart</button>
         </div>
     </form>
+
+    <?php if ($repeat_confirmation && $repeat_selection): ?>
+    <div class="repeat-order-backdrop">
+        <section class="repeat-order-dialog" role="dialog" aria-modal="true" aria-labelledby="repeat-order-title" aria-describedby="repeat-order-description">
+            <p class="checkout-kicker">A LITTLE MORE BOBA?</p>
+            <h2 id="repeat-order-title">Order this again?</h2>
+            <p id="repeat-order-description">You ordered <strong><?= sanitize($product['name']) ?></strong> after your last checkout. Would you like to add it to your cart again?</p>
+            <div class="repeat-order-actions">
+                <a class="btn btn-secondary" href="<?= app_url('product.php?id=' . (int)$product['id']) ?>">Not now</a>
+                <form method="POST">
+                    <input type="hidden" name="size" value="<?= sanitize($repeat_selection['size']) ?>">
+                    <input type="hidden" name="sugar" value="<?= sanitize($repeat_selection['sugar']) ?>">
+                    <input type="hidden" name="ice" value="<?= sanitize($repeat_selection['ice']) ?>">
+                    <input type="hidden" name="qty" value="<?= (int)$repeat_selection['qty'] ?>">
+                    <input type="hidden" name="confirm_repeat" value="yes">
+                    <button type="submit" class="btn btn-primary">Yes, add to cart</button>
+                </form>
+            </div>
+        </section>
+    </div>
+    <?php endif; ?>
 </div>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>
