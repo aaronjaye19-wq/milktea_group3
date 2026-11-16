@@ -51,6 +51,7 @@ $status_badge = [
         <thead>
             <tr>
                 <th>Order #</th>
+                <th>Reference</th>
                 <th>Customer</th>
                 <th>Phone</th>
                 <th>Total</th>
@@ -62,11 +63,12 @@ $status_badge = [
         </thead>
         <tbody>
             <?php if (empty($orders)): ?>
-            <tr><td colspan="8" style="text-align:center;color:#9898B5;padding:32px;">No orders found.</td></tr>
+            <tr><td colspan="9" style="text-align:center;color:#9898B5;padding:32px;">No orders found.</td></tr>
             <?php else: ?>
             <?php foreach ($orders as $o): ?>
             <tr>
                 <td data-label="Order #" style="font-weight:600;">#<?= str_pad($o['id'], 6, '0', STR_PAD_LEFT) ?></td>
+                <td data-label="Reference" style="font-size:12px;white-space:nowrap;"><?= sanitize(order_reference($o)) ?></td>
                 <td data-label="Customer"><?= sanitize($o['customer_name']) ?></td>
                 <td data-label="Phone" style="font-size:13px;color:#9898B5;"><?= sanitize($o['customer_phone']) ?></td>
                 <td data-label="Total" style="font-weight:600;">&#8369;<?= number_format($o['total_amount'], 2) ?></td>

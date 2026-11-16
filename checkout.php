@@ -1,48 +1,55 @@
 <?php
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/functions.php';
-$page_title = 'Checkout';
+$page_title = 'Secure Checkout';
 
 if (!is_user_logged_in()) {
     redirect('login.php?next=' . rawurlencode('checkout.php'));
 }
 
 $cart = get_cart();
-if (empty($cart)) { redirect('/cart.php'); }
+if (empty($cart)) {
+    redirect('cart.php');
+}
 
 $errors = [];
-$order_id = null;
+$form_token = create_form_token('checkout');
+$customer_stmt = $pdo->prepare('SELECT full_name, email FROM customers WHERE id = ? LIMIT 1');
+$customer_stmt->execute([(int) $_SESSION['user_id']]);
+$customer = $customer_stmt->fetch() ?: ['full_name' => '', 'email' => ''];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name    = trim($_POST['name'] ?? '');
-    $email   = trim($_POST['email'] ?? '');
-    $phone   = trim($_POST['phone'] ?? '');
+    if (!verify_form_token('checkout', $_POST['form_token'] ?? '')) {
+        $errors[] = 'This checkout form has expired. Please review your order and try again.';
+    }
+
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
     $address = trim($_POST['address'] ?? '');
     $payment = trim($_POST['payment'] ?? '');
-
     $allowed_payments = ['Cash on Delivery', 'GCash', 'Maya'];
 
-    if (empty($name))    $errors[] = 'Full name is required.';
-    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'A valid email is required.';
-    if (empty($phone))   $errors[] = 'Phone number is required.';
-    if (empty($address)) $errors[] = 'Delivery address is required.';
-    if (!in_array($payment, $allowed_payments)) $errors[] = 'Please select a payment method.';
+    if ($name === '') $errors[] = 'Full name is required.';
+    if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'A valid email is required.';
+    if ($phone === '') $errors[] = 'Phone number is required.';
+    if ($address === '') $errors[] = 'Delivery address is required.';
+    if (!in_array($payment, $allowed_payments, true)) $errors[] = 'Please select a payment method.';
 
-    if (empty($errors)) {
+    if (!$errors) {
         $total = cart_total();
-
         $pdo->beginTransaction();
         try {
             $stmt = $pdo->prepare(
                 "INSERT INTO orders (customer_name, customer_email, customer_phone, delivery_address, payment_method, total_amount, status)
-                 VALUES (?, ?, ?, ?, ?, ?, 'Pending')"
+                 VALUES (?, ?, ?, ?, ?, ?, 'Pending')",
             );
             $stmt->execute([$name, $email, $phone, $address, $payment, $total]);
-            $order_id = $pdo->lastInsertId();
+            $order_id = (int) $pdo->lastInsertId();
 
             $item_stmt = $pdo->prepare(
-                "INSERT INTO order_items (order_id, product_id, product_name, size, sugar_level, ice_level, quantity, unit_price, subtotal)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                'INSERT INTO order_items (order_id, product_id, product_name, size, sugar_level, ice_level, quantity, unit_price, subtotal)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
             );
             foreach ($cart as $item) {
                 $item_stmt->execute([
@@ -60,116 +67,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $pdo->commit();
             clear_cart();
-            redirect('/order-confirmation.php?order_id=' . $order_id);
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            $errors[] = 'Something went wrong. Please try again.';
+            redirect('order-confirmation.php?order_id=' . $order_id);
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            $errors[] = 'Something went wrong while placing your order. Please try again.';
         }
     }
-}
 
-$payment_methods = [
-    ['value' => 'Cash on Delivery', 'icon' => '&#128176;', 'label' => 'Cash on Delivery'],
-    ['value' => 'GCash',            'icon' => '&#128241;', 'label' => 'GCash'],
-    ['value' => 'Maya',             'icon' => '&#128179;', 'label' => 'Maya'],
-];
+    $form_token = create_form_token('checkout');
+}
 
 $total = cart_total();
 ?>
 <?php include __DIR__ . '/includes/header.php'; ?>
 
-<section class="page-hero">
-    <div class="container">
-        <h1>Checkout</h1>
-        <p>Fill in your details to complete your order</p>
-    </div>
-</section>
-
-<div class="container">
-    <div class="checkout-layout">
-
-        <!-- Left: Form -->
+<main class="container checkout-page">
+    <a class="cart-back-link" href="<?= app_url('cart.php') ?>">&larr; Back to cart</a>
+    <header class="checkout-heading">
         <div>
-            <?php if (!empty($errors)): ?>
-                <div class="alert alert-error">
-                    <?php foreach ($errors as $e): ?>
-                        <div><?= sanitize($e) ?></div>
-                    <?php endforeach; ?>
-                </div>
+            <p class="cart-eyebrow">ALMOST THERE</p>
+            <h1>Complete your order</h1>
+            <p>Review your details and choose how you&apos;d like to pay.</p>
+        </div>
+        <div class="checkout-step" aria-label="Checkout step 2 of 2"><span>02</span><span>of 02</span><strong>Checkout</strong></div>
+    </header>
+
+    <div class="checkout-layout checkout-layout-modern">
+        <div>
+            <?php if ($errors): ?>
+                <div class="alert alert-error" role="alert"><?php foreach ($errors as $error): ?><div><?= sanitize($error) ?></div><?php endforeach; ?></div>
             <?php endif; ?>
 
-            <form method="POST">
-                <!-- Customer Info -->
-                <div class="checkout-card">
-                    <h3>Customer Information</h3>
-                    <div class="form-group">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" name="name" class="form-control" value="<?= sanitize($_POST['name'] ?? '') ?>" placeholder="Juan dela Cruz" required>
-                    </div>
+            <form method="POST" class="checkout-form-modern">
+                <input type="hidden" name="form_token" value="<?= sanitize($form_token) ?>">
+                <section class="checkout-card checkout-section-card">
+                    <div class="checkout-section-heading"><span class="checkout-section-number">01</span><div><h2>Contact information</h2><p>Where should we send your order updates?</p></div></div>
+                    <div class="form-group"><label class="form-label" for="checkout-name">Full name</label><input type="text" id="checkout-name" name="name" class="form-control" value="<?= sanitize($_POST['name'] ?? $customer['full_name']) ?>" autocomplete="name" placeholder="Your full name" required></div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" name="email" class="form-control" value="<?= sanitize($_POST['email'] ?? '') ?>" placeholder="you@email.com" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Phone Number</label>
-                            <input type="text" name="phone" class="form-control" value="<?= sanitize($_POST['phone'] ?? '') ?>" placeholder="09XX XXX XXXX" required>
-                        </div>
+                        <div class="form-group"><label class="form-label" for="checkout-email">Email address</label><input type="email" id="checkout-email" name="email" class="form-control" value="<?= sanitize($_POST['email'] ?? $customer['email']) ?>" autocomplete="email" placeholder="you@example.com" required></div>
+                        <div class="form-group"><label class="form-label" for="checkout-phone">Phone number</label><input type="tel" id="checkout-phone" name="phone" class="form-control" value="<?= sanitize($_POST['phone'] ?? '') ?>" autocomplete="tel" placeholder="09XX XXX XXXX" required></div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Delivery Address -->
-                <div class="checkout-card">
-                    <h3>Delivery Address</h3>
-                    <div class="form-group">
-                        <label class="form-label">Full Address</label>
-                        <textarea name="address" class="form-control" placeholder="Street, Barangay, City, Province" required><?= sanitize($_POST['address'] ?? '') ?></textarea>
-                    </div>
-                </div>
+                <section class="checkout-card checkout-section-card">
+                    <div class="checkout-section-heading"><span class="checkout-section-number">02</span><div><h2>Delivery address</h2><p>Tell us where your tea should arrive.</p></div></div>
+                    <div class="form-group"><label class="form-label" for="checkout-address">Full address</label><textarea id="checkout-address" name="address" class="form-control" autocomplete="street-address" placeholder="Street, barangay, city, province" required><?= sanitize($_POST['address'] ?? '') ?></textarea></div>
+                </section>
 
-                <!-- Payment Method -->
-                <div class="checkout-card">
-                    <h3>Payment Method</h3>
-                    <div class="payment-options">
-                        <?php foreach ($payment_methods as $pm): ?>
-                        <label class="payment-option">
-                            <input type="radio" name="payment" value="<?= sanitize($pm['value']) ?>" <?= ($_POST['payment'] ?? '') === $pm['value'] ? 'checked' : '' ?>>
-                            <span class="payment-option-icon"><?= $pm['icon'] ?></span>
-                            <span class="payment-option-label"><?= sanitize($pm['label']) ?></span>
-                        </label>
+                <section class="checkout-card checkout-section-card">
+                    <div class="checkout-section-heading"><span class="checkout-section-number">03</span><div><h2>Payment method</h2><p>Select your preferred way to pay.</p></div></div>
+                    <div class="payment-options payment-options-modern">
+                        <?php foreach ([['Cash on Delivery', 'Pay when your order arrives'], ['GCash', 'Pay with GCash'], ['Maya', 'Pay with Maya']] as [$method, $description]): ?>
+                            <label class="payment-option payment-option-modern <?= ($_POST['payment'] ?? 'Cash on Delivery') === $method ? 'selected' : '' ?>">
+                                <input type="radio" name="payment" value="<?= sanitize($method) ?>" <?= ($_POST['payment'] ?? 'Cash on Delivery') === $method ? 'checked' : '' ?> required>
+                                <span class="payment-option-content"><span class="payment-option-label"><?= sanitize($method) ?></span><small><?= sanitize($description) ?></small></span>
+                                <span class="payment-radio-indicator" aria-hidden="true"></span>
+                            </label>
                         <?php endforeach; ?>
                     </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-lg btn-block">Place Order</button>
+                </section>
+                <button type="submit" class="btn btn-primary btn-lg btn-block checkout-submit">Place order <span aria-hidden="true">&rarr;</span></button>
+                <p class="checkout-secure-note"><span aria-hidden="true">✓</span> Your order details are securely recorded.</p>
             </form>
         </div>
 
-        <!-- Right: Summary -->
-        <div>
-            <div class="order-summary">
-                <h3>Order Summary</h3>
+        <aside class="order-summary checkout-summary">
+            <p class="cart-eyebrow">YOUR ORDER</p>
+            <h2>Order summary</h2>
+            <div class="checkout-summary-items">
                 <?php foreach ($cart as $item): ?>
-                <div class="summary-row">
-                    <span><?= sanitize($item['product_name']) ?><br>
-                        <small style="font-size:11px;color:var(--text-muted);"><?= sanitize($item['size']) ?> &bull; <?= sanitize($item['sugar_level']) ?> &bull; <?= sanitize($item['ice_level']) ?></small>
-                        &times; <?= (int)$item['quantity'] ?>
-                    </span>
-                    <span><?= format_price($item['subtotal']) ?></span>
-                </div>
+                    <div class="checkout-summary-item">
+                        <div class="checkout-summary-item-copy"><strong><?= sanitize($item['product_name']) ?> <span>&times; <?= (int)$item['quantity'] ?></span></strong><small><?= sanitize($item['size']) ?> &middot; <?= sanitize($item['sugar_level']) ?> sugar &middot; <?= sanitize($item['ice_level']) ?></small></div>
+                        <span><?= format_price($item['subtotal']) ?></span>
+                    </div>
                 <?php endforeach; ?>
-                <div class="summary-row">
-                    <span>Delivery Fee</span>
-                    <span>FREE</span>
-                </div>
-                <div class="summary-row total">
-                    <span>Total</span>
-                    <span><?= format_price($total) ?></span>
-                </div>
             </div>
-        </div>
-
+            <div class="summary-row"><span>Subtotal</span><span><?= format_price($total) ?></span></div>
+            <div class="summary-row"><span>Delivery</span><span class="cart-free-shipping">Free</span></div>
+            <div class="summary-row total"><span>Total</span><span><?= format_price($total) ?></span></div>
+            <a class="checkout-edit-cart" href="<?= app_url('cart.php') ?>">Edit your cart</a>
+        </aside>
     </div>
-</div>
+</main>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

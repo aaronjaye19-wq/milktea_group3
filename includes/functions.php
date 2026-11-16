@@ -92,6 +92,12 @@ function format_price($amount) {
     return '&#8369;' . number_format($amount, 2);
 }
 
+function order_reference($order) {
+    $timestamp = strtotime($order['created_at'] ?? 'now');
+    $order_id = (int) ($order['id'] ?? 0);
+    return 'ST-' . date('Ymd', $timestamp ?: time()) . '-' . str_pad((string) $order_id, 6, '0', STR_PAD_LEFT);
+}
+
 function is_admin_logged_in() {
     return isset($_SESSION['admin_id']);
 }

@@ -113,6 +113,10 @@ $status_badge = [
                 <span class="value">#<?= str_pad($order['id'], 6, '0', STR_PAD_LEFT) ?></span>
             </div>
             <div class="info-row">
+                <span class="label">Reference Number</span>
+                <span class="value"><?= sanitize(order_reference($order)) ?></span>
+            </div>
+            <div class="info-row">
                 <span class="label">Date Placed</span>
                 <span class="value"><?= date('M j, Y g:i A', strtotime($order['created_at'])) ?></span>
             </div>

@@ -69,11 +69,33 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Auto-select first payment option
-    var firstPayment = document.querySelector('.payment-option');
-    if (firstPayment) {
-        firstPayment.classList.add('selected');
-        firstPayment.querySelector('input[type="radio"]').checked = true;
+    // Keep the payment selection styling in sync with the server-rendered value.
+    var paymentOptions = document.querySelectorAll('.payment-option');
+    var checkedPayment = document.querySelector('.payment-option input[type="radio"]:checked');
+    if (!checkedPayment && paymentOptions.length) {
+        checkedPayment = paymentOptions[0].querySelector('input[type="radio"]');
+        checkedPayment.checked = true;
+    }
+    paymentOptions.forEach(function (option) {
+        option.classList.toggle('selected', option.querySelector('input[type="radio"]').checked);
+    });
+
+    // Focus and dismiss the repeat-order confirmation when it is present.
+    var repeatModal = document.getElementById('repeat-order-modal');
+    if (repeatModal) {
+        var confirmButton = repeatModal.querySelector('[name="confirm_repeat"]');
+        var cancelButton = document.getElementById('repeat-order-cancel');
+        if (confirmButton) confirmButton.focus();
+        if (cancelButton) {
+            cancelButton.addEventListener('click', function () {
+                repeatModal.remove();
+            });
+        }
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && repeatModal.isConnected) {
+                repeatModal.remove();
+            }
+        });
     }
 });
 

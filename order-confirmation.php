@@ -30,6 +30,10 @@ $items = $items_stmt->fetchAll();
                 <span class="order-detail-value">#<?= str_pad($order['id'], 6, '0', STR_PAD_LEFT) ?></span>
             </div>
             <div class="order-detail-row">
+                <span class="order-detail-label">Reference Number</span>
+                <span class="order-detail-value"><?= sanitize(order_reference($order)) ?></span>
+            </div>
+            <div class="order-detail-row">
                 <span class="order-detail-label">Date</span>
                 <span class="order-detail-value"><?= date('F j, Y', strtotime($order['created_at'])) ?></span>
             </div>
