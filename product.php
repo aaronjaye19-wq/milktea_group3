@@ -11,6 +11,11 @@ $product = $stmt->fetch();
 
 if (!$product) { redirect('/index.php'); }
 
+// Require an account before accepting any cart changes.
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !is_user_logged_in()) {
+    redirect('login.php?next=' . rawurlencode('product.php?id=' . $id));
+}
+
 // Handle add to cart
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

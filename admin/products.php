@@ -36,7 +36,8 @@ $products = $stmt->fetchAll();
 
 <?php if ($message): ?><div class="alert alert-success"><?= sanitize($message) ?></div><?php endif; ?>
 
-<div class="admin-card">
+<div class="admin-card admin-list-card">
+    <div class="admin-table-scroll">
     <table class="admin-table">
         <thead>
             <tr>
@@ -82,6 +83,7 @@ $products = $stmt->fetchAll();
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
     <?php if ($total_pages > 1): ?>
     <nav class="pagination" aria-label="Products pagination">
         <?php if ($page > 1): ?><a href="<?= app_url('admin/products.php?page=' . ($page - 1)) ?>">Previous</a><?php else: ?><span class="disabled">Previous</span><?php endif; ?>
