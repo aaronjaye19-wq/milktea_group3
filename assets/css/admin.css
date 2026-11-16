@@ -964,3 +964,38 @@ body.admin-page-product-form :is(input, textarea, button, a):focus-visible {
         max-height: 46px;
     }
 }
+
+.analytics-section { margin-bottom: 24px; }
+.analytics-toolbar { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 18px; }
+.analytics-toolbar h3 { margin: 0; color: #2C1810; font-size: 20px; }
+.analytics-eyebrow { margin: 0 0 4px; color: #B8845A; font-size: 10px; font-weight: 700; letter-spacing: .12em; }
+.analytics-caption { margin: 5px 0 0; color: #7A5C45; font-size: 12px; }
+.analytics-date-filter { display: flex; align-items: end; gap: 10px; flex-wrap: wrap; }
+.analytics-date-field { display: grid; gap: 4px; }
+.analytics-date-field label { color: #7A5C45; font-size: 11px; font-weight: 600; }
+.analytics-date-field input { min-height: 38px; padding: 7px 9px; border: 1px solid #DDD0BA; border-radius: 7px; color: #2C1810; background: #fff; font: inherit; font-size: 12px; }
+.analytics-date-filter .btn { min-height: 38px; padding: 8px 14px; }
+.analytics-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); margin-bottom: 0; }
+.analytics-grid .stat-card { min-width: 0; padding: 16px; }
+.analytics-grid .stat-label { min-height: 30px; }
+.analytics-currency { font-size: clamp(16px, 1.6vw, 21px); overflow-wrap: anywhere; }
+.analytics-currency .price-currency { font-size: inherit; }
+.sales-bar-chart { justify-content: flex-start; overflow-x: auto; gap: 12px; }
+.sales-bar-chart .bar-item { flex: 0 0 34px; }
+.sales-bar { background: linear-gradient(180deg, #D4A96A, #7C4A2D); }
+.analytics-empty { min-height: 180px; display: grid; place-items: center; color: #7A5C45; font-size: 13px; }
+.analytics-date-filter :is(input, button):focus-visible { outline: 2px solid #7C4A2D; outline-offset: 2px; }
+
+@media (max-width: 1080px) {
+    .analytics-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .analytics-toolbar { align-items: flex-start; flex-direction: column; }
+}
+
+@media (max-width: 600px) {
+    .analytics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .analytics-grid .stat-card { padding: 13px; }
+    .analytics-toolbar h3 { font-size: 18px; }
+    .analytics-date-filter { width: 100%; }
+    .analytics-date-field { flex: 1 1 120px; }
+    .analytics-date-field input { width: 100%; }
+}
