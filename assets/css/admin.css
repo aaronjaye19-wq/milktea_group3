@@ -489,13 +489,15 @@ body.admin-page-product-form .page-actions {
 body.admin-page-product-form .product-form-card {
     width: min(100%, 760px);
     max-width: none;
+    min-height: 0;
     margin: 0 auto;
-    padding: 14px 20px;
+    padding: 10px 14px;
 }
 
 .product-form-card h3 {
-    margin-bottom: 10px;
-    padding-bottom: 8px;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    font-size: 14px;
 }
 
 .product-form-layout {
@@ -510,24 +512,51 @@ body.admin-page-product-form .product-form-card {
     min-width: 0;
 }
 
-.product-form-layout > .product-form-wide,
 .product-form-layout > .product-form-row,
 .product-form-layout > .product-form-actions {
     grid-column: 1 / -1;
 }
 
 .product-form-layout .form-group {
-    margin-bottom: 7px;
+    margin-bottom: 5px;
+}
+
+.product-form-layout .form-label {
+    margin-bottom: 3px;
+    font-size: 11px;
 }
 
 .product-form-layout .form-control {
-    min-height: 38px;
-    padding: 6px 10px;
+    min-height: 34px;
+    padding: 5px 8px;
+    font-size: 12px;
 }
 
 .product-form-layout textarea.form-control {
-    min-height: 48px;
-    max-height: 70px;
+    min-height: 38px;
+    max-height: 56px;
+}
+
+.product-form-layout .image-upload-control {
+    gap: 6px;
+    padding: 6px 8px;
+}
+
+.product-form-layout .image-upload-control input[type="file"] {
+    min-width: 0;
+    font-size: 11px;
+}
+
+.product-form-layout .image-upload-hint {
+    margin-top: 3px;
+    font-size: 10px;
+}
+
+.product-form-layout .image-preview {
+    display: inline-block;
+    width: 42px;
+    height: 42px;
+    margin-top: 4px;
 }
 
 .product-form-row {
@@ -652,6 +681,11 @@ body.admin-page-orders .page-actions {
 
     .product-form-layout .form-group {
         margin-bottom: 4px;
+    }
+
+    .product-form-layout textarea.form-control {
+        min-height: 36px;
+        max-height: 44px;
     }
 }
 

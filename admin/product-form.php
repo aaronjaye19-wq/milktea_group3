@@ -93,7 +93,7 @@ $categories_preset = ['Milk Tea','Fruit Tea','Coffee','Smoothies','Specials'];
             <input type="text" name="name" class="form-control" value="<?= sanitize($product['name']) ?>" placeholder="e.g. Brown Sugar Milk Tea" required>
         </div>
 
-        <div class="form-group product-form-wide">
+        <div class="form-group">
             <label class="form-label">Description</label>
             <textarea name="description" class="form-control" placeholder="Describe the flavor, ingredients..."><?= sanitize($product['description']) ?></textarea>
         </div>
@@ -114,7 +114,7 @@ $categories_preset = ['Milk Tea','Fruit Tea','Coffee','Smoothies','Specials'];
             </div>
         </div>
 
-        <div class="form-group product-form-wide">
+        <div class="form-group">
             <label class="form-label">Product Image <span style="font-weight:400;color:#9898B5;">(optional)</span></label>
             <div class="image-upload-control">
                 <input type="file" name="product_image" accept="image/jpeg,image/png,image/webp,image/gif">
