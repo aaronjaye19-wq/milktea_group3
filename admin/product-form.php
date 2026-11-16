@@ -84,9 +84,9 @@ $categories_preset = ['Milk Tea','Fruit Tea','Coffee','Smoothies','Specials'];
 </div>
 <?php endif; ?>
 
-<div class="admin-form-card">
+<div class="admin-form-card product-form-card">
     <h3><?= $id ? 'Edit Product Details' : 'New Product' ?></h3>
-    <form method="POST" class="admin-form" enctype="multipart/form-data">
+    <form method="POST" class="admin-form product-form-layout" enctype="multipart/form-data">
 
         <div class="form-group">
             <label class="form-label">Product Name</label>
@@ -98,7 +98,7 @@ $categories_preset = ['Milk Tea','Fruit Tea','Coffee','Smoothies','Specials'];
             <textarea name="description" class="form-control" placeholder="Describe the flavor, ingredients..."><?= sanitize($product['description']) ?></textarea>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="product-form-row">
             <div class="form-group">
                 <label class="form-label">Category</label>
                 <input type="text" name="category" class="form-control" list="cat-list" value="<?= sanitize($product['category']) ?>" placeholder="Milk Tea, Fruit Tea..." required>
@@ -132,7 +132,7 @@ $categories_preset = ['Milk Tea','Fruit Tea','Coffee','Smoothies','Specials'];
             </label>
         </div>
 
-        <div style="display:flex;gap:12px;">
+        <div class="product-form-actions">
             <button type="submit" class="btn btn-primary"><?= $id ? 'Save Changes' : 'Add Product' ?></button>
             <a href="<?= app_url('admin/products.php') ?>" class="btn btn-secondary">Cancel</a>
         </div>

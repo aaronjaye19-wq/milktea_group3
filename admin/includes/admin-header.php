@@ -3,6 +3,7 @@ require_once dirname(__DIR__) . '/../includes/db.php';
 require_once dirname(__DIR__) . '/../includes/functions.php';
 require_admin();
 $current_page = basename($_SERVER['PHP_SELF']);
+$page_key = pathinfo($current_page, PATHINFO_FILENAME);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,7 +16,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <link rel="stylesheet" href="<?= app_url('assets/css/style.css') ?>">
     <link rel="stylesheet" href="<?= app_url('assets/css/admin.css') ?>">
 </head>
-<body class="admin-body">
+<body class="admin-body admin-page-<?= sanitize($page_key) ?>">
 
 <div class="admin-shell">
     <!-- Sidebar -->
