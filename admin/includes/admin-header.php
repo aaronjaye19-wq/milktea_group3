@@ -29,7 +29,7 @@ $page_key = pathinfo($current_page, PATHINFO_FILENAME);
         <nav class="sidebar-nav">
             <a href="<?= app_url('admin/index.php') ?>" class="<?= $current_page === 'index.php' ? 'active' : '' ?>">
                 <span class="nav-icon">&#9783;</span>
-                <span>Dashboard</span>
+                <span>Sales Report</span>
             </a>
             <a href="<?= app_url('admin/products.php') ?>" class="<?= in_array($current_page, ['products.php','product-form.php']) ? 'active' : '' ?>">
                 <span class="nav-icon">&#9749;</span>
