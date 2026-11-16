@@ -6,7 +6,7 @@ require_once __DIR__ . '/includes/admin-header.php';
 $allowed_statuses = ['All', 'Pending', 'Confirmed', 'Preparing', 'Out for Delivery', 'Completed', 'Cancelled'];
 $filter = isset($_GET['status']) && in_array($_GET['status'], $allowed_statuses) ? $_GET['status'] : 'All';
 
-$per_page = 10;
+$per_page = 5;
 $page = max(1, (int)($_GET['page'] ?? 1));
 $count_sql = $filter === 'All' ? "SELECT COUNT(*) FROM orders" : "SELECT COUNT(*) FROM orders WHERE status = ?";
 $count_stmt = $pdo->prepare($count_sql);
@@ -37,7 +37,7 @@ $status_badge = [
 </div>
 
 <!-- Status Filter Tabs -->
-<div class="category-filter" style="margin-bottom:20px;">
+<div class="category-filter orders-filter">
     <?php foreach ($allowed_statuses as $s): ?>
         <a href="<?= app_url('admin/orders.php?status=' . urlencode($s)) ?>"
            class="category-btn <?= $filter === $s ? 'active' : '' ?>"
@@ -45,9 +45,9 @@ $status_badge = [
     <?php endforeach; ?>
 </div>
 
-<div class="admin-card admin-list-card">
-    <div class="admin-table-scroll">
-    <table class="admin-table">
+<div class="admin-card admin-list-card fit-list-card">
+    <div class="admin-table-scroll fit-table-viewport">
+    <table class="admin-table fit-table">
         <thead>
             <tr>
                 <th>Order #</th>
@@ -66,14 +66,14 @@ $status_badge = [
             <?php else: ?>
             <?php foreach ($orders as $o): ?>
             <tr>
-                <td style="font-weight:600;">#<?= str_pad($o['id'], 6, '0', STR_PAD_LEFT) ?></td>
-                <td><?= sanitize($o['customer_name']) ?></td>
-                <td style="font-size:13px;color:#9898B5;"><?= sanitize($o['customer_phone']) ?></td>
-                <td style="font-weight:600;">&#8369;<?= number_format($o['total_amount'], 2) ?></td>
-                <td><?= sanitize($o['payment_method']) ?></td>
-                <td><span class="badge <?= $status_badge[$o['status']] ?? 'badge-pending' ?>"><?= sanitize($o['status']) ?></span></td>
-                <td style="font-size:12px;color:#9898B5;"><?= date('M j, Y g:i A', strtotime($o['created_at'])) ?></td>
-                <td><a href="<?= app_url('admin/order-detail.php?id=' . (int)$o['id']) ?>" class="btn btn-secondary btn-sm">View</a></td>
+                <td data-label="Order #" style="font-weight:600;">#<?= str_pad($o['id'], 6, '0', STR_PAD_LEFT) ?></td>
+                <td data-label="Customer"><?= sanitize($o['customer_name']) ?></td>
+                <td data-label="Phone" style="font-size:13px;color:#9898B5;"><?= sanitize($o['customer_phone']) ?></td>
+                <td data-label="Total" style="font-weight:600;">&#8369;<?= number_format($o['total_amount'], 2) ?></td>
+                <td data-label="Payment"><?= sanitize($o['payment_method']) ?></td>
+                <td data-label="Status"><span class="badge <?= $status_badge[$o['status']] ?? 'badge-pending' ?>"><?= sanitize($o['status']) ?></span></td>
+                <td data-label="Date" style="font-size:12px;color:#9898B5;"><?= date('M j, Y g:i A', strtotime($o['created_at'])) ?></td>
+                <td data-label="Action"><a href="<?= app_url('admin/order-detail.php?id=' . (int)$o['id']) ?>" class="btn btn-secondary btn-sm">View</a></td>
             </tr>
             <?php endforeach; ?>
             <?php endif; ?>

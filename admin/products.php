@@ -16,7 +16,7 @@ if (isset($_GET['deleted'])) {
     $message = 'Product deleted successfully.';
 }
 
-$per_page = 8;
+$per_page = 5;
 $page = max(1, (int)($_GET['page'] ?? 1));
 $total_products_count = (int)$pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
 $total_pages = max(1, (int)ceil($total_products_count / $per_page));
@@ -36,9 +36,9 @@ $products = $stmt->fetchAll();
 
 <?php if ($message): ?><div class="alert alert-success"><?= sanitize($message) ?></div><?php endif; ?>
 
-<div class="admin-card admin-list-card">
-    <div class="admin-table-scroll">
-    <table class="admin-table">
+<div class="admin-card admin-list-card fit-list-card">
+    <div class="admin-table-scroll fit-table-viewport">
+    <table class="admin-table fit-table">
         <thead>
             <tr>
                 <th>Image</th>
@@ -55,22 +55,22 @@ $products = $stmt->fetchAll();
             <?php else: ?>
             <?php foreach ($products as $p): ?>
             <tr>
-                <td>
+                <td data-label="Image">
                     <?php if (!empty($p['image_url'])): ?>
                         <img src="<?= sanitize($p['image_url']) ?>" class="product-thumb" alt="">
                     <?php else: ?>
                         <div class="product-thumb-placeholder">&#9749;</div>
                     <?php endif; ?>
                 </td>
-                <td style="font-weight:600;"><?= sanitize($p['name']) ?></td>
-                <td><?= sanitize($p['category']) ?></td>
-                <td>&#8369;<?= number_format($p['price'], 2) ?></td>
-                <td>
+                <td data-label="Name" style="font-weight:600;"><?= sanitize($p['name']) ?></td>
+                <td data-label="Category"><?= sanitize($p['category']) ?></td>
+                <td data-label="Price">&#8369;<?= number_format($p['price'], 2) ?></td>
+                <td data-label="Status">
                     <span class="badge <?= $p['is_available'] ? 'badge-available' : 'badge-unavailable' ?>">
                         <?= $p['is_available'] ? 'Available' : 'Hidden' ?>
                     </span>
                 </td>
-                <td>
+                <td data-label="Actions">
                     <div class="action-group">
                         <a href="<?= app_url('admin/product-form.php?id=' . (int)$p['id']) ?>" class="btn btn-secondary btn-sm">Edit</a>
                         <a href="<?= app_url('admin/products.php?delete=' . (int)$p['id']) ?>"
