@@ -61,6 +61,11 @@ $stmt->bindValue(1, $recent_per_page, PDO::PARAM_INT);
 $stmt->bindValue(2, ($recent_page - 1) * $recent_per_page, PDO::PARAM_INT);
 $stmt->execute();
 $recent = $stmt->fetchAll();
+$recent_page_url = static fn($page) => app_url('admin/index.php?' . http_build_query([
+    'page' => $page,
+    'from' => $date_from,
+    'to' => $date_to,
+]));
 $status_counts = $pdo->query("SELECT status, COUNT(*) AS total FROM orders GROUP BY status")->fetchAll(PDO::FETCH_KEY_PAIR);
 
 $status_badge = [
@@ -154,9 +159,9 @@ $status_badge = [
     </table>
     <?php if ($recent_pages > 1): ?>
     <nav class="pagination" aria-label="Recent orders pagination">
-        <?php if ($recent_page > 1): ?><a href="<?= app_url('admin/index.php?page=' . ($recent_page - 1)) ?>">Previous</a><?php else: ?><span class="disabled">Previous</span><?php endif; ?>
-        <?php for ($p = 1; $p <= $recent_pages; $p++): ?><a class="<?= $p === $recent_page ? 'current' : '' ?>" href="<?= app_url('admin/index.php?page=' . $p) ?>"><?= $p ?></a><?php endfor; ?>
-        <?php if ($recent_page < $recent_pages): ?><a href="<?= app_url('admin/index.php?page=' . ($recent_page + 1)) ?>">Next</a><?php else: ?><span class="disabled">Next</span><?php endif; ?>
+        <?php if ($recent_page > 1): ?><a href="<?= sanitize($recent_page_url($recent_page - 1)) ?>">Previous</a><?php else: ?><span class="disabled">Previous</span><?php endif; ?>
+        <?php for ($p = 1; $p <= $recent_pages; $p++): ?><a class="<?= $p === $recent_page ? 'current' : '' ?>" href="<?= sanitize($recent_page_url($p)) ?>"><?= $p ?></a><?php endfor; ?>
+        <?php if ($recent_page < $recent_pages): ?><a href="<?= sanitize($recent_page_url($recent_page + 1)) ?>">Next</a><?php else: ?><span class="disabled">Next</span><?php endif; ?>
     </nav>
     <?php endif; ?>
 </div>
