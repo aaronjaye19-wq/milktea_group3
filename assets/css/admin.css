@@ -361,7 +361,7 @@
 }
 .status-select:focus { border-color: #B8845A; }
 
-/* ── Page Actions ────────────────────────�����────────── */
+/* ── Page Actions ────────────────────────�������────────── */
 .page-actions {
     display: flex;
     align-items: center;
@@ -795,5 +795,172 @@ body.admin-page-orders .page-actions {
 
     .product-form-row {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Keep the complete product editor inside the available viewport. */
+html:has(body.admin-page-product-form) {
+    overflow: hidden;
+}
+
+body.admin-page-product-form,
+body.admin-page-product-form .admin-shell,
+body.admin-page-product-form .admin-content {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+}
+
+body.admin-page-product-form .admin-page {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+    min-height: 0;
+    padding: clamp(5px, 1vh, 10px) clamp(8px, 2vw, 22px);
+}
+
+body.admin-page-product-form .alert {
+    flex: 0 0 auto;
+    margin: 0 auto;
+    width: min(100%, 840px);
+    padding: 7px 10px;
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+body.admin-page-product-form .product-form-card {
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    width: min(100%, 840px);
+    max-height: 100%;
+    margin: auto;
+    padding: clamp(7px, 1vh, 11px) clamp(10px, 2vw, 18px);
+    overflow: hidden;
+}
+
+body.admin-page-product-form .product-form-card h3 {
+    flex: 0 0 auto;
+    margin: 0 0 5px;
+    padding-bottom: 5px;
+    font-size: 14px;
+}
+
+body.admin-page-product-form .product-form-layout {
+    flex: 0 1 auto;
+    min-height: 0;
+    align-content: start;
+    gap: 0 18px;
+}
+
+body.admin-page-product-form .product-form-layout .form-group {
+    min-width: 0;
+    margin-bottom: clamp(3px, .6vh, 6px);
+}
+
+body.admin-page-product-form .product-form-layout .form-label {
+    margin-bottom: 3px;
+    font-size: 11px;
+    line-height: 1.25;
+}
+
+body.admin-page-product-form .product-form-layout .form-control {
+    min-height: 32px;
+    padding: 5px 9px;
+    font-size: 12px;
+}
+
+body.admin-page-product-form .product-form-layout textarea.form-control {
+    min-height: 42px;
+    max-height: 52px;
+    resize: none;
+}
+
+body.admin-page-product-form .product-form-row {
+    gap: 12px;
+}
+
+body.admin-page-product-form .product-form-layout .image-upload-control {
+    min-height: 36px;
+    gap: 6px;
+    padding: 6px 9px;
+}
+
+body.admin-page-product-form .product-form-layout .image-upload-control input[type="file"] {
+    min-width: 0;
+    font-size: 11px;
+}
+
+body.admin-page-product-form .product-form-layout .image-preview {
+    display: inline-block;
+    width: 34px;
+    height: 34px;
+    margin: 3px 0 0;
+}
+
+body.admin-page-product-form .product-form-layout > .form-group:nth-child(5) {
+    align-self: center;
+}
+
+body.admin-page-product-form .product-form-layout > .form-group:nth-child(5) label {
+    min-height: 32px;
+}
+
+body.admin-page-product-form .product-form-actions {
+    flex: 0 0 auto;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+body.admin-page-product-form .product-form-actions .btn {
+    min-height: 32px;
+    padding: 5px 12px;
+}
+
+body.admin-page-product-form :is(input, textarea, button, a):focus-visible {
+    outline: 2px solid #7C4A2D;
+    outline-offset: 2px;
+}
+
+@media (max-width: 420px) {
+    body.admin-page-product-form .product-form-card {
+        margin: 0 auto;
+    }
+
+    body.admin-page-product-form .product-form-layout {
+        gap: 0 8px;
+    }
+
+    body.admin-page-product-form .product-form-row {
+        gap: 8px;
+    }
+
+    body.admin-page-product-form .product-form-layout textarea.form-control {
+        min-height: 42px;
+        max-height: 52px;
+    }
+}
+
+@media (max-height: 620px) {
+    body.admin-page-product-form .admin-topbar {
+        flex-basis: 48px;
+        height: 48px;
+    }
+
+    body.admin-page-product-form .product-form-layout .form-group {
+        margin-bottom: 4px;
+    }
+
+    body.admin-page-product-form .product-form-layout .form-control {
+        min-height: 32px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    body.admin-page-product-form .product-form-layout textarea.form-control {
+        min-height: 38px;
+        max-height: 46px;
     }
 }
