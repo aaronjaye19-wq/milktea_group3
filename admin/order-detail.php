@@ -141,17 +141,6 @@ $status_badge = [
                 <button type="submit" class="btn btn-primary btn-block">Update Status</button>
             </form>
 
-            <div style="margin-top:16px;padding-top:14px;border-top:1px solid #E8E8EF;">
-                <div style="font-size:12px;color:#9898B5;font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;">Status Flow</div>
-                <?php
-                $flow = ['Pending','Confirmed','Preparing','Out for Delivery','Completed'];
-                foreach ($flow as $i => $step): ?>
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;">
-                    <span style="width:20px;height:20px;border-radius:50%;background:<?= $order['status'] === $step ? '#7C4A2D' : '#E8E8EF' ?>;display:flex;align-items:center;justify-content:center;font-size:10px;color:<?= $order['status'] === $step ? '#fff' : '#9898B5' ?>;flex-shrink:0;font-weight:700;"><?= $i+1 ?></span>
-                    <span style="color:<?= $order['status'] === $step ? '#1E1E2D' : '#9898B5' ?>;font-weight:<?= $order['status'] === $step ? '600' : '400' ?>;"><?= $step ?></span>
-                </div>
-                <?php endforeach; ?>
-            </div>
         </div>
     </div>
 </div>
