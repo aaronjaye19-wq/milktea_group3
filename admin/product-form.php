@@ -84,19 +84,19 @@ $categories_preset = ['Milk Tea','Fruit Tea','Coffee','Smoothies','Specials'];
     <form method="POST" class="admin-form product-form-layout" enctype="multipart/form-data">
 
         <div class="form-group">
-            <label class="form-label">Product Name</label>
-            <input type="text" name="name" class="form-control" value="<?= sanitize($product['name']) ?>" placeholder="e.g. Brown Sugar Milk Tea" required>
+            <label class="form-label" for="product-name">Product Name</label>
+            <input id="product-name" type="text" name="name" class="form-control" value="<?= sanitize($product['name']) ?>" placeholder="e.g. Brown Sugar Milk Tea" required>
         </div>
 
         <div class="form-group">
-            <label class="form-label">Description</label>
-            <textarea name="description" class="form-control" placeholder="Describe the flavor, ingredients..."><?= sanitize($product['description']) ?></textarea>
+            <label class="form-label" for="product-description">Description</label>
+            <textarea id="product-description" name="description" class="form-control" placeholder="Flavor and ingredients"><?= sanitize($product['description']) ?></textarea>
         </div>
 
         <div class="product-form-row">
             <div class="form-group">
-                <label class="form-label">Category</label>
-                <input type="text" name="category" class="form-control" list="cat-list" value="<?= sanitize($product['category']) ?>" placeholder="Milk Tea, Fruit Tea..." required>
+                <label class="form-label" for="product-category">Category</label>
+                <input id="product-category" type="text" name="category" class="form-control" list="cat-list" value="<?= sanitize($product['category']) ?>" placeholder="Milk Tea, Fruit Tea..." required>
                 <datalist id="cat-list">
                     <?php foreach ($categories_preset as $c): ?>
                         <option value="<?= sanitize($c) ?>">
@@ -104,17 +104,16 @@ $categories_preset = ['Milk Tea','Fruit Tea','Coffee','Smoothies','Specials'];
                 </datalist>
             </div>
             <div class="form-group">
-                <label class="form-label">Base Price (PHP)</label>
-                <input type="number" name="price" class="form-control" value="<?= sanitize($product['price']) ?>" placeholder="0.00" step="0.01" min="0" required>
+                <label class="form-label" for="product-price">Base Price (PHP)</label>
+                <input id="product-price" type="number" name="price" class="form-control" value="<?= sanitize($product['price']) ?>" placeholder="0.00" step="0.01" min="0" required>
             </div>
         </div>
 
         <div class="form-group">
-            <label class="form-label">Product Image <span style="font-weight:400;color:#9898B5;">(optional)</span></label>
+            <label class="form-label" for="product-image">Product Image <span style="font-weight:400;color:#9898B5;">(optional, max 5MB)</span></label>
             <div class="image-upload-control">
-                <input type="file" name="product_image" accept="image/jpeg,image/png,image/webp,image/gif">
+                <input id="product-image" type="file" name="product_image" accept="image/jpeg,image/png,image/webp,image/gif">
             </div>
-            <div class="image-upload-hint">Upload a JPG, PNG, WEBP, or GIF image up to 5MB.</div>
             <?php if (!empty($product['image_url'])): ?>
                 <img src="<?= sanitize($product['image_url']) ?>" class="image-preview" alt="Current product image">
             <?php endif; ?>
