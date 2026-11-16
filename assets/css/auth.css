@@ -143,10 +143,21 @@
   margin: 24px 0 0;
 }
 
+body:has(.register-card) {
+  height: 100vh;
+  height: 100svh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+body:has(.register-card) .site-header {
+  flex: 0 0 64px;
+}
+
 .auth-main:has(.register-card) {
-  min-height: calc(100vh - 64px);
-  min-height: calc(100svh - 64px);
-  padding: clamp(12px, 2.5vh, 24px) 20px;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: clamp(8px, 2vh, 18px) 20px;
 }
 
 .register-card {
@@ -243,25 +254,35 @@
 @media (max-height: 680px) {
   .auth-main:has(.register-card) {
     align-items: flex-start;
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding-top: 6px;
+    padding-bottom: 6px;
   }
 
   .register-card {
-    padding-top: 14px;
-    padding-bottom: 14px;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
 
   .register-card .auth-intro {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   .register-card .form-group {
-    margin-bottom: 7px;
+    margin-bottom: 5px;
+  }
+
+  .register-card .form-control {
+    min-height: 38px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .register-card .auth-check {
+    margin-bottom: 8px;
   }
 
   .register-card .auth-switch {
-    margin-top: 8px;
+    margin-top: 6px;
   }
 }
 
