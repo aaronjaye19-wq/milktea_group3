@@ -143,12 +143,134 @@
   margin: 24px 0 0;
 }
 
+.auth-main:has(.register-card) {
+  min-height: calc(100vh - 64px);
+  min-height: calc(100svh - 64px);
+  padding: clamp(12px, 2.5vh, 24px) 20px;
+}
+
+.register-card {
+  width: min(100%, 760px);
+  padding: clamp(18px, 3vh, 30px) clamp(20px, 4vw, 38px);
+}
+
+.register-card .auth-eyebrow {
+  margin-bottom: 4px;
+  font-size: 10px;
+}
+
+.register-card h1 {
+  margin-bottom: 4px;
+  font-size: clamp(23px, 3vw, 29px);
+}
+
+.register-card .auth-intro {
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.register-card form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 18px;
+  align-items: start;
+}
+
+.register-card .form-group {
+  min-width: 0;
+  margin-bottom: 10px;
+}
+
+.register-card .form-label {
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+.register-card .form-control {
+  min-height: 42px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  font-size: 13px;
+}
+
+.register-card .auth-hint {
+  margin-top: 3px;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.register-card .auth-check,
+.register-card .auth-submit {
+  grid-column: 1 / -1;
+}
+
+.register-card .auth-check {
+  margin: 3px 0 12px;
+  font-size: 11px;
+}
+
+.register-card .auth-submit {
+  min-height: 44px;
+}
+
+.register-card .auth-switch {
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.register-card .alert {
+  margin-bottom: 12px;
+  padding: 9px 12px;
+  font-size: 12px;
+}
+
+@media (max-width: 560px) {
+  .auth-main:has(.register-card) {
+    padding: 12px 14px;
+  }
+
+  .register-card {
+    padding: 18px 18px;
+  }
+
+  .register-card form {
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: 0;
+  }
+
+}
+
+@media (max-height: 680px) {
+  .auth-main:has(.register-card) {
+    align-items: flex-start;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .register-card {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .register-card .auth-intro {
+    margin-bottom: 10px;
+  }
+
+  .register-card .form-group {
+    margin-bottom: 7px;
+  }
+
+  .register-card .auth-switch {
+    margin-top: 8px;
+  }
+}
+
 @media (max-width: 480px) {
-  .auth-main {
+  .auth-main:not(:has(.register-card)) {
     padding: 32px 16px;
   }
 
-  .auth-card {
+  .auth-card:not(.register-card) {
     padding: 28px 22px;
   }
 }
